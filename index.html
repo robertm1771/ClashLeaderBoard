@@ -3,66 +3,100 @@
 <head>
     <style>
         body {
-            background-color: #00FF00; /* Chroma green */
-            font-family: Arial, sans-serif;
+            background-color: #00FF00; /* Chroma green for video overlay */
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
         }
-        
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
         table {
-            width: 80%;
-            margin: 20px auto;
+            width: 100%;
             border-collapse: collapse;
-            background-color: white;
+            margin: 20px 0;
         }
-        
+
         th, td {
-            padding: 15px;
-            border: 2px solid black;
-            font-size: 24px; /* Large text */
+            padding: 12px 15px;
             text-align: left;
-            color: black;
+            border-bottom: 1px solid #ddd;
+            font-size: 16px;
+            color: #202124;
         }
-        
+
         th {
-            background-color: #f0f0f0;
+            background-color: #f8f9fa;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 14px;
+            color: #5f6368;
         }
-        
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
         #error {
-            color: white;
-            font-size: 24px;
+            color: #d93025;
+            font-size: 14px;
             text-align: center;
-            margin: 20px;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #fce8e6;
+            border-radius: 4px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            th, td {
+                font-size: 14px;
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <table id="dataTable">
-        <thead id="tableHeader"></thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-    <div id="error"></div>
+    <div class="container">
+        <table id="dataTable">
+            <thead id="tableHeader"></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+        <div id="error"></div>
+    </div>
 
     <script>
         const apiUrl = 'https://script.google.com/macros/s/AKfycby1uVeT_R_3hAQBvyqN8bEetkzJw6S9eJB8oYMw_sOy7SL9yGIcXaVHOqmghkE94vtRWQ/exec';
 
-        // Function to format duration from Date to mm:ss
         function formatDuration(value) {
-            if (!value) return "00:00"; // Handle empty or zero values
+            if (!value) return "00:00";
             
             if (typeof value === 'string' && value.includes('T')) {
-                // Handle Date object from Google Sheets
                 const date = new Date(value);
-                // Extract minutes and seconds directly from the time portion
                 const minutes = date.getUTCMinutes();
                 const seconds = date.getUTCSeconds();
                 return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             } else if (typeof value === 'number') {
-                // Handle numeric duration (days)
                 const totalSeconds = Math.round(value * 24 * 60 * 60);
                 const minutes = Math.floor(totalSeconds / 60);
                 const seconds = totalSeconds % 60;
                 return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             }
-            return value; // Return as-is if not a recognizable duration
+            return value;
         }
 
         fetch(apiUrl, {
@@ -82,8 +116,6 @@
         .then(data => {
             if (data.length > 0) {
                 const headers = Object.keys(data[0]);
-                
-                // Create table header
                 const headerRow = document.createElement('tr');
                 headers.forEach(header => {
                     const th = document.createElement('th');
@@ -92,13 +124,11 @@
                 });
                 document.getElementById('tableHeader').appendChild(headerRow);
 
-                // Create table rows
                 const tbody = document.getElementById('tableBody');
                 data.forEach(row => {
                     const tr = document.createElement('tr');
                     headers.forEach((header, index) => {
                         const td = document.createElement('td');
-                        // Format columns 2 and 3 (G and H, indices 2 and 3) as mm:ss
                         if (index === 2 || index === 3) {
                             td.textContent = formatDuration(row[header]);
                         } else {
@@ -109,11 +139,15 @@
                     tbody.appendChild(tr);
                 });
             } else {
-                document.getElementById('error').textContent = 'No data received from the sheet';
+                const errorDiv = document.getElementById('error');
+                errorDiv.textContent = 'No data received from the sheet';
+                errorDiv.style.display = 'block';
             }
         })
         .catch(error => {
-            document.getElementById('error').textContent = 'Error loading data: ' + error.message;
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = 'Error loading data: ' + error.message;
+            errorDiv.style.display = 'block';
             console.error('Error:', error);
         });
     </script>
