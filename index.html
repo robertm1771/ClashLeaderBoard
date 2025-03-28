@@ -42,15 +42,35 @@
     <div id="error"></div>
 
     <script>
-        // Use your actual Web app URL
         const apiUrl = 'https://script.google.com/macros/s/AKfycby1uVeT_R_3hAQBvyqN8bEetkzJw6S9eJB8oYMw_sOy7SL9yGIcXaVHOqmghkE94vtRWQ/exec';
+
+        // Function to format duration to mm:ss
+        function formatDuration(value) {
+            if (!value) return "00:00"; // Handle empty or zero values
+            
+            let seconds;
+            if (typeof value === 'number') {
+                // Assume number is in days (Google Sheets duration format)
+                seconds = Math.round(value * 24 * 60 * 60);
+            } else if (value instanceof Date) {
+                // If it's a Date object
+                seconds = value.getHours() * 3600 + value.getMinutes() * 60 + value.getSeconds();
+            } else {
+                return value; // Return as-is if not a recognizable duration
+            }
+
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        }
 
         fetch(apiUrl, {
             method: 'GET',
-            mode: 'cors', // Explicitly set CORS mode
+            mode: 'cors', // Ensure CORS is enabled
             headers: {
                 'Accept': 'application/json'
-            }
+            },
+            redirect: 'follow' // Handle potential redirects
         })
         .then(response => {
             if (!response.ok) {
@@ -62,6 +82,7 @@
             if (data.length > 0) {
                 const headers = Object.keys(data[0]);
                 
+                // Create table header
                 const headerRow = document.createElement('tr');
                 headers.forEach(header => {
                     const th = document.createElement('th');
@@ -70,12 +91,18 @@
                 });
                 document.getElementById('tableHeader').appendChild(headerRow);
 
+                // Create table rows
                 const tbody = document.getElementById('tableBody');
                 data.forEach(row => {
                     const tr = document.createElement('tr');
-                    headers.forEach(header => {
+                    headers.forEach((header, index) => {
                         const td = document.createElement('td');
-                        td.textContent = row[header];
+                        // Format columns 2 and 3 (G and H, indices 2 and 3) as mm:ss
+                        if (index === 2 || index === 3) {
+                            td.textContent = formatDuration(row[header]);
+                        } else {
+                            td.textContent = row[header];
+                        }
                         tr.appendChild(td);
                     });
                     tbody.appendChild(tr);
