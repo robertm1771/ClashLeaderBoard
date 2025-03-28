@@ -26,7 +26,8 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate; /* Changed to separate to allow rounded corners */
+            border-spacing: 0; /* Remove spacing between cells */
             background: transparent;
         }
 
@@ -44,6 +45,17 @@
             text-transform: uppercase;
             font-size: 16px;
             color: #ffeb3b; /* Yellow text for headers to match logo */
+            border-radius: 8px 8px 0 0; /* Rounded top corners for headers */
+            border-bottom: none; /* Remove bottom border to avoid overlap */
+        }
+
+        /* Ensure the first and last th have proper rounded corners */
+        th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 8px;
         }
 
         tbody tr {
