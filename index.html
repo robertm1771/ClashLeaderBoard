@@ -44,28 +44,25 @@
     <script>
         const apiUrl = 'https://script.google.com/macros/s/AKfycby1uVeT_R_3hAQBvyqN8bEetkzJw6S9eJB8oYMw_sOy7SL9yGIcXaVHOqmghkE94vtRWQ/exec';
 
-        // Function to format duration from Date or number to mm:ss
+        // Function to format duration from Date to mm:ss
         function formatDuration(value) {
             if (!value) return "00:00"; // Handle empty or zero values
             
-            let totalSeconds;
             if (typeof value === 'string' && value.includes('T')) {
-                // Handle ISO string (Date object from Google Sheets)
+                // Handle Date object from Google Sheets
                 const date = new Date(value);
-                // Google Sheets base date is 1899-12-30 00:00:00
-                const baseDate = new Date('1899-12-30T00:00:00.000Z');
-                const diffMs = date - baseDate;
-                totalSeconds = Math.floor(diffMs / 1000);
+                // Extract minutes and seconds directly from the time portion
+                const minutes = date.getUTCMinutes();
+                const seconds = date.getUTCSeconds();
+                return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             } else if (typeof value === 'number') {
                 // Handle numeric duration (days)
-                totalSeconds = Math.round(value * 24 * 60 * 60);
-            } else {
-                return value; // Return as-is if not a recognizable duration
+                const totalSeconds = Math.round(value * 24 * 60 * 60);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             }
-
-            const minutes = Math.floor(totalSeconds / 60);
-            const seconds = totalSeconds % 60;
-            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            return value; // Return as-is if not a recognizable duration
         }
 
         fetch(apiUrl, {
