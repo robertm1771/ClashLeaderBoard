@@ -44,33 +44,37 @@
     <script>
         const apiUrl = 'https://script.google.com/macros/s/AKfycby1uVeT_R_3hAQBvyqN8bEetkzJw6S9eJB8oYMw_sOy7SL9yGIcXaVHOqmghkE94vtRWQ/exec';
 
-        // Function to format duration to mm:ss
+        // Function to format duration from Date or number to mm:ss
         function formatDuration(value) {
             if (!value) return "00:00"; // Handle empty or zero values
             
-            let seconds;
-            if (typeof value === 'number') {
-                // Assume number is in days (Google Sheets duration format)
-                seconds = Math.round(value * 24 * 60 * 60);
-            } else if (value instanceof Date) {
-                // If it's a Date object
-                seconds = value.getHours() * 3600 + value.getMinutes() * 60 + value.getSeconds();
+            let totalSeconds;
+            if (typeof value === 'string' && value.includes('T')) {
+                // Handle ISO string (Date object from Google Sheets)
+                const date = new Date(value);
+                // Google Sheets base date is 1899-12-30 00:00:00
+                const baseDate = new Date('1899-12-30T00:00:00.000Z');
+                const diffMs = date - baseDate;
+                totalSeconds = Math.floor(diffMs / 1000);
+            } else if (typeof value === 'number') {
+                // Handle numeric duration (days)
+                totalSeconds = Math.round(value * 24 * 60 * 60);
             } else {
                 return value; // Return as-is if not a recognizable duration
             }
 
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
 
         fetch(apiUrl, {
             method: 'GET',
-            mode: 'cors', // Ensure CORS is enabled
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json'
             },
-            redirect: 'follow' // Handle potential redirects
+            redirect: 'follow'
         })
         .then(response => {
             if (!response.ok) {
