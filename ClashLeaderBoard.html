@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #00FF00; /* Chroma green */
+            font-family: Arial, sans-serif;
+        }
+        
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        
+        th, td {
+            padding: 15px;
+            border: 2px solid black;
+            font-size: 24px; /* Large text */
+            text-align: left;
+            color: black;
+        }
+        
+        th {
+            background-color: #f0f0f0;
+        }
+        
+        #error {
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <table id="dataTable">
+        <thead id="tableHeader"></thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+    <div id="error"></div>
+
+    <script>
+        // Use your actual Web app URL
+        const apiUrl = 'https://script.google.com/macros/s/AKfycby1uVeT_R_3hAQBvyqN8bEetkzJw6S9eJB8oYMw_sOy7SL9yGIcXaVHOqmghkE94vtRWQ/exec';
+
+        fetch(apiUrl, {
+            method: 'GET',
+            mode: 'cors', // Explicitly set CORS mode
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.length > 0) {
+                const headers = Object.keys(data[0]);
+                
+                const headerRow = document.createElement('tr');
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                document.getElementById('tableHeader').appendChild(headerRow);
+
+                const tbody = document.getElementById('tableBody');
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    headers.forEach(header => {
+                        const td = document.createElement('td');
+                        td.textContent = row[header];
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            } else {
+                document.getElementById('error').textContent = 'No data received from the sheet';
+            }
+        })
+        .catch(error => {
+            document.getElementById('error').textContent = 'Error loading data: ' + error.message;
+            console.error('Error:', error);
+        });
+    </script>
+</body>
+</html>
