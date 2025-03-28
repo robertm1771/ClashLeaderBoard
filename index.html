@@ -22,6 +22,7 @@
             padding: 15px; /* Padding for content */
             overflow: hidden; /* Contain rounded corners */
             border: 2px solid #ffeb3b; /* Yellow border to match logo accent */
+            display: none; /* Hide by default until data is loaded */
         }
 
         table {
@@ -75,7 +76,7 @@
             padding: 10px;
             background: rgba(217, 48, 37, 0.9); /* Broadcast red error */
             border-radius: 5px;
-            display: none;
+            display: none; /* Hidden by default */
         }
 
         @media (max-width: 600px) {
@@ -91,7 +92,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="container">
         <table id="dataTable">
             <thead id="tableHeader"></thead>
             <tbody id="tableBody"></tbody>
@@ -148,28 +149,4 @@
                 data.forEach(row => {
                     const tr = document.createElement('tr');
                     headers.forEach((header, index) => {
-                        const td = document.createElement('td');
-                        if (index === 2 || index === 3) {
-                            td.textContent = formatDuration(row[header]);
-                        } else {
-                            td.textContent = row[header];
-                        }
-                        tr.appendChild(td);
-                    });
-                    tbody.appendChild(tr);
-                });
-            } else {
-                const errorDiv = document.getElementById('error');
-                errorDiv.textContent = 'No data received from the sheet';
-                errorDiv.style.display = 'block';
-            }
-        })
-        .catch(error => {
-            const errorDiv = document.getElementById('error');
-            errorDiv.textContent = 'Error loading data: ' + error.message;
-            errorDiv.style.display = 'block';
-            console.error('Error:', error);
-        });
-    </script>
-</body>
-</html>
+                        const
