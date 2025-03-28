@@ -77,6 +77,10 @@
             background: rgba(217, 48, 37, 0.9); /* Broadcast red error */
             border-radius: 5px;
             display: none; /* Hidden by default */
+            position: absolute; /* Ensure it's visible on the chroma green background */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         @media (max-width: 600px) {
@@ -120,6 +124,7 @@
             return value;
         }
 
+        console.log("Starting fetch request...");
         fetch(apiUrl, {
             method: 'GET',
             mode: 'cors',
@@ -129,14 +134,18 @@
             redirect: 'follow'
         })
         .then(response => {
+            console.log("Fetch response received:", response);
             if (!response.ok) {
                 throw new Error('Network response was not ok: ' + response.status);
             }
             return response.json();
         })
         .then(data => {
-            if (data.length > 0) {
+            console.log("Data received:", data);
+            if (data && Array.isArray(data) && data.length > 0) {
+                console.log("Data is valid, populating table...");
                 const headers = Object.keys(data[0]);
+                console.log("Headers:", headers);
                 const headerRow = document.createElement('tr');
                 headers.forEach(header => {
                     const th = document.createElement('th');
@@ -149,4 +158,34 @@
                 data.forEach(row => {
                     const tr = document.createElement('tr');
                     headers.forEach((header, index) => {
-                        const
+                        const td = document.createElement('td');
+                        if (index === 2 || index === 3) {
+                            td.textContent = formatDuration(row[header]);
+                        } else {
+                            td.textContent = row[header];
+                        }
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+
+                console.log("Table populated, showing container...");
+                const container = document.getElementById('container');
+                container.style.display = 'block';
+                console.log("Container should now be visible.");
+            } else {
+                console.log("No data received or data is empty.");
+                const errorDiv = document.getElementById('error');
+                errorDiv.textContent = 'No data received from the sheet';
+                errorDiv.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = 'Error loading data: ' + error.message;
+            errorDiv.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
