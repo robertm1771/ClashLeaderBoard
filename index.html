@@ -4,7 +4,7 @@
     <style>
         body {
             background-color: #00FF00; /* Chroma green for video overlay */
-            font-family: 'Roboto', Arial, sans-serif;
+            font-family: 'Roboto Condensed', Arial, sans-serif; /* Condensed font for broadcast feel */
             margin: 0;
             padding: 20px;
             display: flex;
@@ -15,57 +15,65 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            max-width: 1000px; /* Wider for broadcast */
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%); /* Dark metallic gradient to match logo */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            padding: 15px; /* Padding for content */
+            overflow: hidden; /* Contain rounded corners */
+            border: 2px solid #ffeb3b; /* Yellow border to match logo accent */
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            background: transparent;
         }
 
         th, td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
-            font-size: 16px;
-            color: #202124;
+            font-size: 18px; /* Larger for TV visibility */
+            color: #ffffff; /* White text for contrast */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         th {
-            background-color: #f8f9fa;
-            font-weight: 500;
+            background: linear-gradient(90deg, #d32f2f 0%, #0288d1 100%); /* Red-to-blue gradient from excavators */
+            font-weight: 700;
             text-transform: uppercase;
-            font-size: 14px;
-            color: #5f6368;
+            font-size: 16px;
+            color: #ffeb3b; /* Yellow text for headers to match logo */
         }
 
-        tr:hover {
-            background-color: #f5f5f5;
+        tbody tr {
+            background: rgba(0, 0, 0, 0.7); /* Dark semi-transparent rows */
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 0, 0, 0.9); /* Slightly lighter on hover */
         }
 
         #error {
-            color: #d93025;
-            font-size: 14px;
+            color: #ffffff;
+            font-size: 16px;
             text-align: center;
-            margin: 20px 0;
+            margin: 20px;
             padding: 10px;
-            background-color: #fce8e6;
-            border-radius: 4px;
+            background: rgba(217, 48, 37, 0.9); /* Broadcast red error */
+            border-radius: 5px;
             display: none;
         }
 
         @media (max-width: 600px) {
             .container {
-                padding: 15px;
+                max-width: 100%;
+                margin: 0 10px;
             }
             th, td {
                 font-size: 14px;
-                padding: 10px;
+                padding: 8px;
             }
         }
     </style>
