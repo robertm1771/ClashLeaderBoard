@@ -23,6 +23,14 @@
             overflow: hidden; /* Contain rounded corners */
             border: 2px solid #ffeb3b; /* Yellow border to match logo accent */
             display: none; /* Hide by default until data is loaded */
+            opacity: 0; /* Start with 0 opacity for fade-in */
+            transition: opacity 0.5s ease-in; /* Fade-in animation */
+        }
+
+        /* Class to trigger the fade-in */
+        .container.visible {
+            display: block;
+            opacity: 1;
         }
 
         table {
@@ -83,6 +91,36 @@
             transform: translate(-50%, -50%);
         }
 
+        #loading {
+            color: #ffffff;
+            font-size: 20px;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7); /* Semi-transparent background for visibility */
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between spinner and text */
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffeb3b; /* Yellow border to match theme */
+            border-top: 3px solid transparent; /* Transparent top for spinning effect */
+            border-radius: 50%;
+            animation: spin 1s linear infinite; /* Spinning animation */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @media (max-width: 600px) {
             .container {
                 max-width: 100%;
@@ -92,10 +130,23 @@
                 font-size: 14px;
                 padding: 8px;
             }
+            #loading {
+                font-size: 16px;
+                padding: 8px 16px;
+            }
+            .spinner {
+                width: 16px;
+                height: 16px;
+                border-width: 2px;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="loading">
+        <div class="spinner"></div>
+        Loading...
+    </div>
     <div class="container" id="container">
         <table id="dataTable">
             <thead id="tableHeader"></thead>
@@ -142,6 +193,9 @@
         })
         .then(data => {
             console.log("Data received:", data);
+            const loadingDiv = document.getElementById('loading');
+            loadingDiv.style.display = 'none'; /* Hide loading indicator */
+
             if (data && Array.isArray(data) && data.length > 0) {
                 console.log("Data is valid, populating table...");
                 const headers = Object.keys(data[0]);
@@ -169,10 +223,10 @@
                     tbody.appendChild(tr);
                 });
 
-                console.log("Table populated, showing container...");
+                console.log("Table populated, showing container with fade-in...");
                 const container = document.getElementById('container');
-                container.style.display = 'block';
-                console.log("Container should now be visible.");
+                container.classList.add('visible'); /* Trigger fade-in */
+                console.log("Container should now be visible with fade-in effect.");
             } else {
                 console.log("No data received or data is empty.");
                 const errorDiv = document.getElementById('error');
@@ -182,6 +236,8 @@
         })
         .catch(error => {
             console.error("Fetch error:", error);
+            const loadingDiv = document.getElementById('loading');
+            loadingDiv.style.display = 'none'; /* Hide loading indicator */
             const errorDiv = document.getElementById('error');
             errorDiv.textContent = 'Error loading data: ' + error.message;
             errorDiv.style.display = 'block';
